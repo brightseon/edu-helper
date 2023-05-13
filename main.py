@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 from dotenv import load_dotenv
 import os
@@ -8,6 +9,7 @@ import time
 load_dotenv()
 
 URL = os.environ.get('url')
+ID = os.environ.get('id')
 
 
 def main():
@@ -17,6 +19,11 @@ def main():
     for win in driver.window_handles[1:]:
         driver.switch_to.window(win)
         driver.close()
+
+    driver.switch_to.window(driver.window_handles[0])
+
+    id_box = driver.find_element(by=By.ID, value='userInputId')
+    id_box.send_keys(ID)
 
     time.sleep(3)
 
