@@ -27,8 +27,11 @@ def main():
 
         id_box = driver.find_element(by=By.ID, value='userInputId')
         password_box = driver.find_element(by=By.ID, value='userInputPw')
+        login_button = driver.find_element(
+            by=By.CSS_SELECTOR, value='a.btn_basic_color.btn_basic.one')
         id_box.send_keys(ID)
         password_box.send_keys(PASSWORD)
+        login_button.click()
 
         time.sleep(3)
 
