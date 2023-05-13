@@ -10,6 +10,7 @@ load_dotenv()
 
 URL = os.environ.get('url')
 ID = os.environ.get('id')
+PASSWORD = os.environ.get('password')
 
 
 def main():
@@ -23,7 +24,9 @@ def main():
     driver.switch_to.window(driver.window_handles[0])
 
     id_box = driver.find_element(by=By.ID, value='userInputId')
+    password_box = driver.find_element(by=By.ID, value='userInputPw')
     id_box.send_keys(ID)
+    password_box.send_keys(PASSWORD)
 
     time.sleep(3)
 
