@@ -46,6 +46,12 @@ def main():
         time.sleep(0.3)
         login_button.click()
 
+        time.sleep(2)
+        courses_taking = driver.find_element(
+            by=By.CSS_SELECTOR, value='a[title="수강중인과정 바로가기"]')
+
+        courses_taking.click()
+
         time.sleep(3)
 
         driver.quit()
