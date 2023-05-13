@@ -20,17 +20,30 @@ def main():
         driver.get(URL)
 
         for win in driver.window_handles[1:]:
+            time.sleep(0.4)
             driver.switch_to.window(win)
             driver.close()
 
         driver.switch_to.window(driver.window_handles[0])
 
+        time.sleep(0.3)
+
         id_box = driver.find_element(by=By.ID, value='userInputId')
         password_box = driver.find_element(by=By.ID, value='userInputPw')
         login_button = driver.find_element(
             by=By.CSS_SELECTOR, value='a.btn_basic_color.btn_basic.one')
-        id_box.send_keys(ID)
-        password_box.send_keys(PASSWORD)
+
+        for s in ID:
+            time.sleep(0.4)
+            id_box.send_keys(s)
+
+        time.sleep(0.3)
+
+        for s in PASSWORD:
+            time.sleep(0.4)
+            password_box.send_keys(s)
+
+        time.sleep(0.3)
         login_button.click()
 
         time.sleep(3)
