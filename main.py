@@ -70,6 +70,11 @@ def main():
         time.sleep(2)
         driver.switch_to.window(driver.window_handles[-1])
 
+        time.sleep(2)
+        play_button = driver.find_element(by=By.CSS_SELECTOR,
+                                          value='button.vjs-big-play-button')
+        play_button.click()
+
         time.sleep(3)
 
         driver.quit()
