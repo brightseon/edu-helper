@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
 from webdriver_manager.chrome import ChromeDriverManager
 from dotenv import load_dotenv
 import os
@@ -48,6 +49,7 @@ def main():
 
         time.sleep(2)
         for win in driver.window_handles[1:]:
+            time.sleep(2)
             driver.switch_to.window(win)
             driver.close()
 
@@ -71,15 +73,56 @@ def main():
         driver.switch_to.window(driver.window_handles[-1])
 
         time.sleep(2)
-        play_button = driver.find_element(by=By.CSS_SELECTOR,
-                                          value='button.vjs-big-play-button')
-        play_button.click()
+
+        display_course_complete = False
+        while display_course_complete == False:
+            time.sleep(2)
+            next_button = driver.find_element(
+                by=By.CSS_SELECTOR, value='button.next-btn.vjs-control')
+
+            time.sleep(5)
+            play_button = driver.find_element(
+                by=By.CSS_SELECTOR, value='button.vjs-big-play-button')
+
+            if play_button.value_of_css_property('display') != 'none':
+                print('play button click')
+                play_button.click()
+
+            time.sleep(5)
+            action = ActionChains(driver)
+            action.move_to_element(driver.find_element(
+                by=By.CSS_SELECTOR, value='div#lx-player')).perform()
+            video_duration = driver.find_element(
+                by=By.CSS_SELECTOR, value='span.vjs-duration-display')
+            print('video_duration: ', video_duration)
+            print('video_duration: ', video_duration.text)
+            if video_duration.text != '':
+                split_video_duration = video_duration.text.split(':')
+                print('split_video_duration: ', split_video_duration)
+
+                secs = int(split_video_duration[0]) * \
+                    60 + int(split_video_duration[1]) + 10
+                print('secs: ', secs)
+
+                time.sleep(secs)
+
+            else:
+                time.sleep(10)
+
+            if driver.find_element(by=By.CSS_SELECTOR, value='span.click_tooltip').value_of_css_property('display') != 'none':
+                print('course complete')
+                next_button.click()
+
+            time.sleep(3)
+            display_course_complete = driver.find_element(
+                by=By.XPATH, value='//*[contains(text(), "마지막 목차입니다.")]').is_displayed()
 
         time.sleep(3)
 
         driver.quit()
     except Exception as e:
         print(e)
+    finally:
         driver.quit()
 
 
