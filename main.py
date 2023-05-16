@@ -80,37 +80,32 @@ def main():
             next_button = driver.find_element(
                 by=By.CSS_SELECTOR, value='button.next-btn.vjs-control')
 
+            if driver.find_element(by=By.CSS_SELECTOR, value='iframe.quizPage').value_of_css_property('display') != 'none':
+                next_button.click()
+
             time.sleep(5)
             play_button = driver.find_element(
                 by=By.CSS_SELECTOR, value='button.vjs-big-play-button')
 
             if play_button.value_of_css_property('display') != 'none':
-                print('play button click')
                 play_button.click()
 
             time.sleep(5)
             action = ActionChains(driver)
             action.move_to_element(driver.find_element(
                 by=By.CSS_SELECTOR, value='div#lx-player')).perform()
+
             video_duration = driver.find_element(
                 by=By.CSS_SELECTOR, value='span.vjs-duration-display')
-            print('video_duration: ', video_duration)
-            print('video_duration: ', video_duration.text)
             if video_duration.text != '':
                 split_video_duration = video_duration.text.split(':')
-                print('split_video_duration: ', split_video_duration)
-
                 secs = int(split_video_duration[0]) * \
                     60 + int(split_video_duration[1]) + 10
-                print('secs: ', secs)
-
                 time.sleep(secs)
-
             else:
                 time.sleep(10)
 
             if driver.find_element(by=By.CSS_SELECTOR, value='span.click_tooltip').value_of_css_property('display') != 'none':
-                print('course complete')
                 next_button.click()
 
             time.sleep(3)
