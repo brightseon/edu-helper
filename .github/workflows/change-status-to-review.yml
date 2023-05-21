@@ -26,7 +26,7 @@ jobs:
             - name: Filter database
               id: filter_database
               run: |
-                  RESPONSE=`curl -X POST 'https://api.notion.com/v1/databases/${{ secrets.NOTION_DATABASE }}/query' \
+                  CARD_ID=$(curl -X POST 'https://api.notion.com/v1/databases/${{ secrets.NOTION_DATABASE }}/query' \
                     -H 'Authorization: '"${{ secrets.NOTION_TOKEN }}"'' \
                     -H 'Notion-Version: 2022-06-28' \
                     -H "Content-Type: application/json" \
@@ -39,18 +39,10 @@ jobs:
                         }
                       }
                     }
-                  }'`
+                  }' | jq '.results[0].id')
 
-                  echo "RESPONSE=$RESPONSE" >> $GITHUB_OUTPUT
-
-            - name: Extract value using jq
-              id: extract_value
-              run: |
-                  echo "response: $RESPONSE"
-                  $CARD_ID=$(echo "$RESPONSE" | jq -r .results[0].id)
                   echo "card id: $CARD_ID"
-
-                  echo "CARD_ID=$CARD_ID" >> $GITHUB_OUTPUT
+                  echo "RESPONSE=$CARD_ID" >> $GITHUB_OUTPUT
 
             - name: Update notion status
               run: |
