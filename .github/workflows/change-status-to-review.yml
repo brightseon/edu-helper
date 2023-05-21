@@ -41,7 +41,7 @@ jobs:
                     }
                   }'`
 
-                  echo "response: $RESPONSE.results[0]"
+                  echo "response: $RESPONSE.results[0].id"
                   echo "RESPONSE=$RESPONSE" >> $GITHUB_OUTPUT
 
             - name: Extract value using jq
