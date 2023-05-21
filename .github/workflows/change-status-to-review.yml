@@ -3,7 +3,7 @@ name: Change status to 'In review'
 on:
     pull_request:
         branches: [develop, feature/**]
-        types: [opened]
+        types: [opened, synchronize]
 
 jobs:
     notion-status:
@@ -11,13 +11,14 @@ jobs:
 
         steps:
             - name: Set up
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
 
             - name: Get ID
               id: get_id
               run: |
                   PR_TITLE="${{ github.event.pull_request.title }}"
-                  ID=$(echo "$PR_TITLE" | grep '\[(.*?)\]')
+                  ID=$(echo $PR_TITLE | grep '\[(.*?)\]')
+                  ehco $ID
 
                   echo "ID=$ID" >> $GITHUB_OUTPUT
 
