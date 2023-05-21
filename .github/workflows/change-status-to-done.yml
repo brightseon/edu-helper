@@ -15,7 +15,7 @@ jobs:
 
             - name: Get current date
               id: get_current_date
-              run: echo "CURRENT_DATE=$(date +'%Y-%m-%d')"
+              run: echo "CURRENT_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
             - name: Get ID
               id: get_id
