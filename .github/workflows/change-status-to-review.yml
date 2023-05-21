@@ -34,7 +34,9 @@ jobs:
                     "filter": {
                       "property": "ID",
                       "formula": {
-                        "equals": ${{ steps.get_id.outputs.ID }}
+                        "string": {
+                          "equals": "${{ steps.get_id.outputs.ID }}"
+                        }
                       }
                     }
                   }'`
