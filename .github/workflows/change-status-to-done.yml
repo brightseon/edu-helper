@@ -46,7 +46,7 @@ jobs:
                   }')
                   CARD_ID=$(echo $RESPONSE | jq '.results[0].id' | grep -P '(?<=\")(.*?)+(?=\")' -o)
                   echo "card id: $CARD_ID"
-                  START_DATE=$(echo $RESPONSE | jq '.results[0].properties.기간')
+                  START_DATE=$(echo $RESPONSE | jq '.results[0].properties."기간".date.start')
                   echo "start date: $START_DATE"
 
                   echo "CARD_ID=$CARD_ID" >> $GITHUB_OUTPUT
