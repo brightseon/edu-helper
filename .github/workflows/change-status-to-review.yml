@@ -41,16 +41,16 @@ jobs:
                     }
                   }'`
 
-                  echo "response: $RESPONSE.results[0].id"
                   echo "RESPONSE=$RESPONSE" >> $GITHUB_OUTPUT
 
             - name: Extract value using jq
               id: extract_value
               run: |
-                  echo "$RESPONSE"
-                  $VALUE=$(echo "$RESPONSE" | jq -r .results[0].id)
+                  echo "response: $RESPONSE"
+                  $CARD_ID=$(echo "$RESPONSE" | jq -r .results[0].id)
+                  echo "card id: $CARD_ID"
 
-                  echo "CARD_ID=$VALUE" >> $GITHUB_OUTPUT
+                  echo "CARD_ID=$CARD_ID" >> $GITHUB_OUTPUT
 
             - name: Update notion status
               run: |
