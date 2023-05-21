@@ -30,7 +30,7 @@ jobs:
             - name: Filter database
               id: filter_database
               run: |
-                  CARD_ID=$(curl -X POST 'https://api.notion.com/v1/databases/${{ secrets.NOTION_DATABASE }}/query' \
+                  RESPONSE=$(curl -X POST 'https://api.notion.com/v1/databases/${{ secrets.NOTION_DATABASE }}/query' \
                     -H 'Authorization: '"${{ secrets.NOTION_TOKEN }}"'' \
                     -H 'Notion-Version: 2022-06-28' \
                     -H "Content-Type: application/json" \
@@ -43,9 +43,12 @@ jobs:
                         }
                       }
                     }
-                  }' | jq '.results[0].id' | grep -P '(?<=\")(.*?)+(?=\")' -o)
+                  }')
+                  CARD_ID=$(echo $RESPONSE | jq '.results[0].id' | grep -P '(?<=\")(.*?)+(?=\")' -o)
+                  START_DATE=$(echo $RESPONSE | jq '.results[0].properties.기간.date.start')
 
                   echo "CARD_ID=$CARD_ID" >> $GITHUB_OUTPUT
+                  echo "START_DATE=$START_DATE" >> $GITHUB_OUTPUT
 
             - name: Update notion status
               run: |
@@ -63,7 +66,8 @@ jobs:
                       },
                       "기간": {
                         "date": {
-                            "end": $CURRENT_DATE
+                            "start": ${{ steps.filter_database.outputs.START_DATE }}
+                            "end": ${{ steps.get_current_date.outputs.CURRENT_DATE }}
                         }
                       }
                     }
