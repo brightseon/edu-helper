@@ -17,8 +17,9 @@ jobs:
               id: get_id
               run: |
                   PR_TITLE="${{ github.event.pull_request.title }}"
-                  ID=$(echo $PR_TITLE | grep '\[(.*?)\]')
-                  ehco $ID
+                  echo "title: $PR_TITLE"
+                  ID=$(echo "$PR_TITLE" | grep '\[(.*?)\]')
+                  echo "title id: $ID"
 
                   echo "ID=$ID" >> $GITHUB_OUTPUT
 
