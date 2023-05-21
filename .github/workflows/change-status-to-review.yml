@@ -6,7 +6,7 @@ on:
         types: [opened, synchronize]
 
 jobs:
-    notion-status:
+    change-status:
         runs-on: ubuntu-latest
 
         steps:
