@@ -2,8 +2,8 @@ name: Change status to 'In review'
 
 on:
     pull_request:
-        branches: [develop, feature/**]
-        types: [opened, synchronize]
+        branches: [develop]
+        types: [opened]
 
 jobs:
     change-status:
