@@ -2,8 +2,8 @@ name: Change status to 'Done'
 
 on:
     pull_request:
-        branches: [develop]
-        types: [closed]
+        branches: [develop, feature/**]
+        types: [closed, synchronize]
 
 jobs:
     change-status:
