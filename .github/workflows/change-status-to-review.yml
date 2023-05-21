@@ -47,6 +47,7 @@ jobs:
             - name: Extract value using jq
               id: extract_value
               run: |
+                  echo $RESPONSE
                   $VALUE=$(echo $RESPONSE | jq -r .results[0].id)
 
                   echo "CARD_ID=$VALUE" >> $GITHUB_OUTPUT
