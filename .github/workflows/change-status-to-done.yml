@@ -69,8 +69,8 @@ jobs:
                       },
                       "기간": {
                         "date": {
-                            "start": ${{ steps.filter_database.outputs.START_DATE }}
-                            "end": "${{ steps.get_current_date.outputs.CURRENT_DATE }}"
+                          "start": ${{ steps.filter_database.outputs.START_DATE }}
+                          "end": "${{ steps.get_current_date.outputs.CURRENT_DATE }}"
                         }
                       }
                     }
