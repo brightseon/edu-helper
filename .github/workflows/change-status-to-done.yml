@@ -2,8 +2,8 @@ name: Change status to 'Done'
 
 on:
     pull_request:
-        branches: [develop, feature/**]
-        types: [closed, synchronize]
+        branches: [develop]
+        types: [closed]
 
 jobs:
     change-status:
@@ -21,9 +21,7 @@ jobs:
               id: get_id
               run: |
                   PR_TITLE="${{ github.event.pull_request.title }}"
-                  echo "title: $PR_TITLE"
                   ID=$(echo "$PR_TITLE" | grep -P '(?<=\[)(.*?)+(?=\])' -o)
-                  echo "title id: $ID"
 
                   echo "ID=$ID" >> $GITHUB_OUTPUT
 
@@ -46,9 +44,7 @@ jobs:
                     }
                   }')
                   CARD_ID=$(echo $RESPONSE | jq '.results[0].id' | grep -P '(?<=\")(.*?)+(?=\")' -o)
-                  echo "card id: $CARD_ID"
                   START_DATE=$(echo $RESPONSE | jq '.results[0].properties."기간".date.start')
-                  echo "start date: $START_DATE"
 
                   echo "CARD_ID=$CARD_ID" >> $GITHUB_OUTPUT
                   echo "START_DATE=$START_DATE" >> $GITHUB_OUTPUT
