@@ -1,0 +1,6 @@
+version: '3.4'
+
+services:
+    edu-helper:
+        image: edu-helper
+        command: sleep infinity
