@@ -1,0 +1,5 @@
+.git
+*.md
+.github
+.env
+.gitignore
