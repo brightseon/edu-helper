@@ -69,7 +69,7 @@ jobs:
                       END_DATE="$(date +'%Y-%m-%d')"
                   fi
 
-                  echo "END_DATE="$END_DATE"" >> $GITHUB_OUTPUT
+                  echo 'END_DATE="$END_DATE"' >> $GITHUB_OUTPUT
 
             - name: Update status
               run: |
