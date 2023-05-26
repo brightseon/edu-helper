@@ -84,7 +84,7 @@ jobs:
                           "기간": {
                             "date": {
                               "start": "${{ steps.find-target.outputs.START_DATE }}",
-                              "end": null
+                              "end": [ ${{ steps.define-end-date.outputs.END_DATE == '' }} ] && null || "${{ steps.define-end-date.outputs.END_DATE }}"
                             }
                           }
                         }
