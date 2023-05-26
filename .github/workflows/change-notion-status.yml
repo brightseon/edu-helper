@@ -3,7 +3,7 @@ name: Change notion status
 on:
     pull_request:
         branches: ['develop']
-        types: ['opened', 'closed', 'synchronize']
+        types: ['opened', 'closed']
 
 jobs:
     change-notion-status:
@@ -45,7 +45,7 @@ jobs:
             - name: Check for done
               id: check-for-done
               run: |
-                  echo "IS_DONE=${{ github.event.action == 'synchronize' }}" >> $GITHUB_OUTPUT
+                  echo "IS_DONE=${{ github.event.action == 'closed' }}" >> $GITHUB_OUTPUT
 
             - name: Define status
               id: define-status
@@ -71,7 +71,6 @@ jobs:
 
             - name: Update status
               run: |
-                  echo "end date: ${{ steps.define-end-date.outputs.END_DATE }}"
                   curl 'https://api.notion.com/v1/pages/${{ steps.find-target.outputs.ID }}' \
                           -X PATCH \
                           -H 'Authorization: '"${{ secrets.NOTION_TOKEN }}"'' \
