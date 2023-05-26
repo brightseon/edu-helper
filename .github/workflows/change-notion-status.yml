@@ -39,7 +39,7 @@ jobs:
                     }
                   }')
                   ID=$(echo $RESPONSE | jq '.results[0].id' | grep -P '(?<=\")(.*?)+(?=\")' -o)
-                  START_DATE=$(echo $RESPONSE | jq '.results[0].properties."기간".date.start' |  | grep -P '(?<=\")(.*?)+(?=\")' -o)
+                  START_DATE=$(echo $RESPONSE | jq '.results[0].properties."기간".date.start' | grep -P '(?<=\")(.*?)+(?=\")' -o)
 
                   echo "ID=$ID" >> $GITHUB_OUTPUT
                   echo "START_DATE=$START_DATE" >> $GITHUB_OUTPUT
@@ -48,7 +48,7 @@ jobs:
               if: github.event.action == 'opened' || github.event.action == 'synchronize'
               id: define-property-in-review
               run: |
-                  echo "PROPERTY=$(echo {
+                  echo "PROPERTY=$({
                     "properties": {
                       "상태": {
                         "status": {
