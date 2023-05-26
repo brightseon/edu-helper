@@ -1,0 +1,99 @@
+name: Change notion status
+
+on:
+    pull_request:
+        branches: ['develop']
+        types: ['opened', 'closed']
+
+jobs:
+    change-notion-status:
+        runs-on: 'ubuntu-latest'
+
+        steps:
+            - name: checkout
+              uses: actions/checkout@v3
+
+            - name: Extract ID in title
+              id: extract-id
+              run: |
+                  ID=$(echo "${{ github.event.pull_request.title }}" | grep -P '(?<=\[)(.*?)+(?=\])' -o)
+
+                  echo "ID=$ID" >> $GITHUB_OUTPUT
+
+            - name: Find target
+              id: find-target
+              run: |
+                  RESPONSE=$(curl 'https://api.notion.com/v1/databases/${{ secrets.NOTION_DATABASE }}/query' \
+                    -H 'Authorization: '"${{ secrets.NOTION_TOKEN }}"'' \
+                    -H 'Notion-Version: 2022-06-28' \
+                    -H "Content-Type: application/json" \
+                    -X POST \
+                  --data '{
+                    "filter": {
+                        "property": "ID",
+                        "formula": {
+                        "string": {
+                            "equals": "${{ steps.extract-id.outputs.ID }}"
+                        }
+                      }
+                    }
+                  }')
+                  ID=$(echo $RESPONSE | jq '.results[0].id' | grep -P '(?<=\")(.*?)+(?=\")' -o)
+                  START_DATE=$(echo $RESPONSE | jq '.results[0].properties."기간".date.start' |  | grep -P '(?<=\")(.*?)+(?=\")' -o)
+
+                  echo "ID=$ID" >> $GITHUB_OUTPUT
+                  echo "START_DATE=$START_DATE" >> $GITHUB_OUTPUT
+
+            - name: Define property in review
+              if: github.event.action == 'opened'
+              id: define-property-in-review
+              run: |
+                  echo "PROPERTY=$(echo {
+                    "properties": {
+                      "상태": {
+                        "status": {
+                          "name": "In review"
+                        }
+                      }
+                    }
+                  })" >> $GITHUB_OUTPUT
+
+            - name: Define property done
+              id: define-property-done
+              if: github.event.action == 'closed'
+              run: |
+                  echo "PROPERTY=$({
+                    "properties": {
+                      "상태": {
+                        "status": {
+                          "name": "Done"
+                        }
+                      },
+                      "기간": {
+                        "date": {
+                          "start": "${{ steps.find-target.outputs.START_DATE }}",
+                          "end": "$(date + '%Y-%m-%d')"
+                        }
+                      }
+                    }
+                  })" >> $GITHUB_OUTPUT
+
+            - name: Get property
+              id: get-property
+              run: |
+                  if ${{ steps.define-property-in-review.outputs.PROPERTY == '' }}
+                      PROPERTY=$(echo "${{ steps.define-property-done.outputs.PROPERTY }}")
+                  else
+                      PROPERTY=$(echo "${{ steps.define-property-in-review.outputs.PROPERTY }}")
+                  fi
+
+                  echo "PROPERTY=$PROPERTY" >> $GITHUB_OUTPUT
+
+            - name: Update status
+              run: |
+                  curl 'https://api.notion.com/v1/pages/${{ steps.find-target.outputs.ID }}' \
+                          -X PATCH \
+                          -H 'Authorization: '"${{ secrets.NOTION_TOKEN }}"'' \
+                          -H "Content-Type: application/json" \
+                          -H "Notion-Version: 2022-06-28" \
+                      --data '${{ steps.get-property.outputs.PROPERTY }}'
