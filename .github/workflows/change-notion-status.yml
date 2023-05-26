@@ -47,14 +47,14 @@ jobs:
             - name: Check for done
               id: check-for-done
               run: |
-                  echo "IS_DONE=$(${{ github.event.action == 'closed' }})"
+                  echo "IS_DONE=$(${{ github.event.action == 'closed' }})" >> $GITHUB_OUTPUT
 
             - name: Define status
               id: define-status
               run: |
                   STATUS="In review"
 
-                  if [ ${{ steps.check-for-done }} ]; then
+                  if [ ${{ steps.check-for-done.outputs.IS_DONE }} ]; then
                       STATUS="Done"
                   fi
 
@@ -65,7 +65,7 @@ jobs:
               run: |
                   END_DATE="NULL"
 
-                  if [ ${{ steps.check-for-done }} ]; then
+                  if [ ${{ steps.check-for-done.outputs.IS_DONE }} ]; then
                       END_DATE="$(date +'%Y-%m-%d')"
                   fi
 
