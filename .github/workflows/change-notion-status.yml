@@ -47,7 +47,7 @@ jobs:
             - name: Check for done
               id: check-for-done
               run: |
-                  echo "IS_DONE=$(${{ github.event.action == 'synchronize' }})" >> $GITHUB_OUTPUT
+                  echo "IS_DONE=$(${{ github.event.action == 'closed' }})" >> $GITHUB_OUTPUT
 
             - name: Define status
               id: define-status
