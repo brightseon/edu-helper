@@ -66,7 +66,7 @@ jobs:
                   END_DATE=null
 
                   if [ ${{ steps.check-for-done.outputs.IS_DONE }} ]; then
-                      END_DATE=$(date +'%Y-%m-%d')
+                      END_DATE="$(date +'%Y-%m-%d')"
                   fi
 
                   echo "END_DATE=$END_DATE" >> $GITHUB_OUTPUT
@@ -89,7 +89,7 @@ jobs:
                           "기간": {
                             "date": {
                               "start": "${{ steps.find-target.outputs.START_DATE }}",
-                              "end": [ ${{ steps.define-end-date.outputs.END_DATE == '' }} ] && null || "${{ steps.define-end-date.outputs.END_DATE }}"
+                              "end": ${{ steps.define-end-date.outputs.END_DATE }}
                             }
                           }
                         }
