@@ -73,8 +73,6 @@ jobs:
 
             - name: Update status
               run: |
-                  echo "status: ${{ steps.define-status.outputs.STATUS }}"
-                  echo "is done: ${{ steps.check-for-done.outputs.IS_DONE }}"
                   echo "end date: ${{ steps.define-end-date.outputs.END_DATE }}"
                   curl 'https://api.notion.com/v1/pages/${{ steps.find-target.outputs.ID }}' \
                           -X PATCH \
