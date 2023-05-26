@@ -62,14 +62,9 @@ jobs:
 
             - name: Define end date
               id: define-end-date
+              if: steps.check-for-done.outputs.IS_DONE
               run: |
-                  END_DATE
-
-                  if [ ${{ steps.check-for-done.outputs.IS_DONE }} ]; then
-                      END_DATE="$(date +'%Y-%m-%d')"
-                  fi
-
-                  echo "END_DATE=$END_DATE" >> $GITHUB_OUTPUT
+                  echo "END_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
             - name: Update status
               run: |
