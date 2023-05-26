@@ -3,7 +3,7 @@ name: Change notion status
 on:
     pull_request:
         branches: ['develop']
-        types: ['opened', 'closed']
+        types: ['opened', 'closed', 'synchronize']
 
 jobs:
     change-notion-status:
@@ -45,7 +45,7 @@ jobs:
                   echo "START_DATE=$START_DATE" >> $GITHUB_OUTPUT
 
             - name: Define property in review
-              if: github.event.action == 'opened'
+              if: github.event.action == 'opened' || github.event.action == 'synchronize'
               id: define-property-in-review
               run: |
                   echo "PROPERTY=$(echo {
