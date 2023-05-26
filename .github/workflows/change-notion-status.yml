@@ -15,8 +15,7 @@ jobs:
 
             - name: Extract ID in title
               id: extract-id
-              run: |
-                  echo "ID=$(echo "${{ github.event.pull_request.title }}" | grep -P '(?<=\[)(.*?)+(?=\])' -o)" >> $GITHUB_OUTPUT
+              run: echo "ID=$(echo "${{ github.event.pull_request.title }}" | grep -P '(?<=\[)(.*?)+(?=\])' -o)" >> $GITHUB_OUTPUT
 
             - name: Find target
               id: find-target
@@ -36,6 +35,7 @@ jobs:
                       }
                     }
                   }')
+
                   ID=$(echo $RESPONSE | jq '.results[0].id' | grep -P '(?<=\")(.*?)+(?=\")' -o)
                   START_DATE=$(echo $RESPONSE | jq '.results[0].properties."기간".date.start' | grep -P '(?<=\")(.*?)+(?=\")' -o)
 
@@ -44,8 +44,7 @@ jobs:
 
             - name: Check for done
               id: check-for-done
-              run: |
-                  echo "IS_DONE=${{ github.event.action == 'closed' }}" >> $GITHUB_OUTPUT
+              run: echo "IS_DONE=${{ github.event.action == 'closed' }}" >> $GITHUB_OUTPUT
 
             - name: Define status
               id: define-status
