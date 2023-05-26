@@ -16,9 +16,7 @@ jobs:
             - name: Extract ID in title
               id: extract-id
               run: |
-                  ID=$(echo "${{ github.event.pull_request.title }}" | grep -P '(?<=\[)(.*?)+(?=\])' -o)
-
-                  echo "ID=$ID" >> $GITHUB_OUTPUT
+                  echo "ID=$(echo "${{ github.event.pull_request.title }}" | grep -P '(?<=\[)(.*?)+(?=\])' -o)" >> $GITHUB_OUTPUT
 
             - name: Find target
               id: find-target
