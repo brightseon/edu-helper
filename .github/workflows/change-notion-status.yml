@@ -66,10 +66,10 @@ jobs:
                   END_DATE=null
 
                   if [ ${{ steps.check-for-done.outputs.IS_DONE == 'true' }} ]; then
-                      END_DATE="$(date +'%Y-%m-%d')"
+                      END_DATE=\"$(date +'%Y-%m-%d')\"
                   fi
 
-                  echo 'END_DATE="$END_DATE"' >> $GITHUB_OUTPUT
+                  echo "END_DATE=$END_DATE" >> $GITHUB_OUTPUT
 
             - name: Update status
               run: |
