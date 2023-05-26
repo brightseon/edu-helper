@@ -63,7 +63,7 @@ jobs:
             - name: Define end date
               id: define-end-date
               run: |
-                  END_DATE=null
+                  END_DATE
 
                   if [ ${{ steps.check-for-done.outputs.IS_DONE }} ]; then
                       END_DATE="$(date +'%Y-%m-%d')"
