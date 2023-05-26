@@ -10,7 +10,7 @@ jobs:
         runs-on: 'ubuntu-latest'
 
         steps:
-            - name: checkout
+            - name: Branch checkout
               uses: actions/checkout@v3
 
             - name: Extract ID in title
@@ -44,50 +44,32 @@ jobs:
                   echo "ID=$ID" >> $GITHUB_OUTPUT
                   echo "START_DATE=$START_DATE" >> $GITHUB_OUTPUT
 
-            - name: Define property in review
-              if: github.event.action == 'opened' || github.event.action == 'synchronize'
-              id: define-property-in-review
+            - name: Check for done
+              id: check-for-done
               run: |
-                  echo "PROPERTY=$({
-                    "properties": {
-                      "상태": {
-                        "status": {
-                          "name": "In review"
-                        }
-                      }
-                    }
-                  })" >> $GITHUB_OUTPUT
+                  echo "IS_DONE=$(${{ github.event.action == 'closed' }})"
 
-            - name: Define property done
-              id: define-property-done
-              if: github.event.action == 'closed'
+            - name: Define status
+              id: define-status
               run: |
-                  echo "PROPERTY=$({
-                    "properties": {
-                      "상태": {
-                        "status": {
-                          "name": "Done"
-                        }
-                      },
-                      "기간": {
-                        "date": {
-                          "start": "${{ steps.find-target.outputs.START_DATE }}",
-                          "end": "$(date + '%Y-%m-%d')"
-                        }
-                      }
-                    }
-                  })" >> $GITHUB_OUTPUT
+                  STATUS="In review"
 
-            - name: Get property
-              id: get-property
-              run: |
-                  if ${{ steps.define-property-in-review.outputs.PROPERTY == '' }}
-                      PROPERTY=$(echo "${{ steps.define-property-done.outputs.PROPERTY }}")
-                  else
-                      PROPERTY=$(echo "${{ steps.define-property-in-review.outputs.PROPERTY }}")
+                  if [ ${{ steps.check-for-done }} ]; then
+                      STATUS="Done"
                   fi
 
-                  echo "PROPERTY=$PROPERTY" >> $GITHUB_OUTPUT
+                  echo "STATUS=$STATUS" >> $GITHUB_OUTPUT
+
+            - name: Define end date
+              id: define-end-date
+              run: |
+                  END_DATE="NULL"
+
+                  if [ ${{ steps.check-for-done }} ]; then
+                      END_DATE="$(date + '%Y-%m-%d')"
+                  fi
+
+                  echo "END_DATE=$END_DATE" >> $GITHUB_OUTPUT
 
             - name: Update status
               run: |
@@ -96,4 +78,18 @@ jobs:
                           -H 'Authorization: '"${{ secrets.NOTION_TOKEN }}"'' \
                           -H "Content-Type: application/json" \
                           -H "Notion-Version: 2022-06-28" \
-                      --data '${{ steps.get-property.outputs.PROPERTY }}'
+                      --data '{
+                        "properties": {
+                          "상태": {
+                            "status": {
+                              "name": "${{ steps.define-status.outputs.STATUS }}"
+                            }
+                          },
+                          "기간": {
+                            "date": {
+                              "start": "${{ steps.find-target.outputs.START_DATE }}",
+                              "end": "${{ steps.define-end-date.outputs.END_DATE }}"
+                            }
+                          }
+                        }
+                      }'
