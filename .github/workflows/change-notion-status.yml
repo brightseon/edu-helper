@@ -1,0 +1,92 @@
+name: Change notion status
+
+on:
+    pull_request:
+        branches: ['develop']
+        types: ['opened', 'closed']
+
+jobs:
+    change-notion-status:
+        runs-on: 'ubuntu-latest'
+
+        steps:
+            - name: Branch checkout
+              uses: actions/checkout@v3
+
+            - name: Extract ID in title
+              id: extract-id
+              run: echo "ID=$(echo "${{ github.event.pull_request.title }}" | grep -P '(?<=\[)(.*?)+(?=\])' -o)" >> $GITHUB_OUTPUT
+
+            - name: Find target
+              id: find-target
+              run: |
+                  RESPONSE=$(curl 'https://api.notion.com/v1/databases/${{ secrets.NOTION_DATABASE }}/query' \
+                    -H 'Authorization: '"${{ secrets.NOTION_TOKEN }}"'' \
+                    -H 'Notion-Version: 2022-06-28' \
+                    -H "Content-Type: application/json" \
+                    -X POST \
+                  --data '{
+                    "filter": {
+                        "property": "ID",
+                        "formula": {
+                        "string": {
+                            "equals": "${{ steps.extract-id.outputs.ID }}"
+                        }
+                      }
+                    }
+                  }')
+
+                  ID=$(echo $RESPONSE | jq '.results[0].id' | grep -P '(?<=\")(.*?)+(?=\")' -o)
+                  START_DATE=$(echo $RESPONSE | jq '.results[0].properties."기간".date.start' | grep -P '(?<=\")(.*?)+(?=\")' -o)
+
+                  echo "ID=$ID" >> $GITHUB_OUTPUT
+                  echo "START_DATE=$START_DATE" >> $GITHUB_OUTPUT
+
+            - name: Check for done
+              id: check-for-done
+              run: echo "IS_DONE=${{ github.event.action == 'closed' }}" >> $GITHUB_OUTPUT
+
+            - name: Define status
+              id: define-status
+              run: |
+                  STATUS="In review"
+
+                  if [[ ${{ steps.check-for-done.outputs.IS_DONE }} == true ]]; then
+                      STATUS="Done"
+                  fi
+
+                  echo "STATUS=$STATUS" >> $GITHUB_OUTPUT
+
+            - name: Define end date
+              id: define-end-date
+              run: |
+                  END_DATE=null
+
+                  if [[ ${{ steps.check-for-done.outputs.IS_DONE }} == true ]]; then
+                      END_DATE=\"$(date +'%Y-%m-%d')\"
+                  fi
+
+                  echo "END_DATE=$END_DATE" >> $GITHUB_OUTPUT
+
+            - name: Update status
+              run: |
+                  curl 'https://api.notion.com/v1/pages/${{ steps.find-target.outputs.ID }}' \
+                          -X PATCH \
+                          -H 'Authorization: '"${{ secrets.NOTION_TOKEN }}"'' \
+                          -H "Content-Type: application/json" \
+                          -H "Notion-Version: 2022-06-28" \
+                      --data '{
+                        "properties": {
+                          "상태": {
+                            "status": {
+                              "name": "${{ steps.define-status.outputs.STATUS }}"
+                            }
+                          },
+                          "기간": {
+                            "date": {
+                              "start": "${{ steps.find-target.outputs.START_DATE }}",
+                              "end": ${{ steps.define-end-date.outputs.END_DATE }}
+                            }
+                          }
+                        }
+                      }'
