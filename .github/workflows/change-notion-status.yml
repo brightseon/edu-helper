@@ -65,7 +65,7 @@ jobs:
               run: |
                   END_DATE=null
 
-                  if [ ${{ steps.check-for-done.outputs.IS_DONE }} ]; then
+                  if [[ ${{ steps.check-for-done.outputs.IS_DONE }} ]]; then
                       END_DATE=\"$(date +'%Y-%m-%d')\"
                   fi
 
